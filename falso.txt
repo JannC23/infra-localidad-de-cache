@@ -1,2 +1,0 @@
-pegados 0 ms suma 200000000
-separados 0 ms suma 200000000
