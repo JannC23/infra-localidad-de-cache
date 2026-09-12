@@ -18,12 +18,37 @@ const int LINEA = 64;  // bytes de una línea de caché
 // TODO: cada hilo suma VUELTAS veces sobre contadores[id], que están
 // contiguos en memoria.
 void pegados(vector<long> &contadores) {
+       vector<thread> hilos;
+       int salto = LINEA / sizeof(long);
+       for (int id = 0; id < HILOS; id++) {
+              hilos.push_back(thread([id, &contadores] () {
+                     for (long i = 0; i < VUELTAS; i++){
+                            contadores[id] += 1;
+                     }
+              }));
+       }
+       for (auto &h : hilos) {
+              h.join();
+       }
 }
 
 // TODO: la misma cuenta, pero con los contadores separados lo suficiente para
 // que cada uno caiga en su propia línea de caché. Sugerencia: reservar
 // HILOS * (LINEA / sizeof(long)) posiciones y usar solo una de cada grupo.
 void separados(vector<long> &contadores) {
+       vector<thread> hilos;
+       for (int id = 0; id < HILOS; id++) {
+              hilos.push_back(thread([id, &contadores] () {
+                     for (long i = 0; i < VUELTAS; i++){
+                            int salto = LINEA / sizeof(long);
+                            contadores[id * salto]++;
+                     }
+              }));
+       }
+       for (auto &h : hilos) {
+              h.join();
+       }
+              
 }
 
 int main() {
